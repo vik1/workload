@@ -1,0 +1,42 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: test-workload
+  labels:
+    app: test-workload
+    tier: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-workload
+  template:
+    metadata:
+      labels:
+        app: test-workload
+    spec:
+      containers:
+        - name: test-workload
+          image: ibmicpcoc/test-workload
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: DB_HOST
+              value: mypsqldb
+            - name: DB_USER
+              value: myadmin
+            - name: DB_PASS
+              value: Admin@123
+      securityContext:
+        capabilities:
+          add:
+            - ALL
+        privileged: false
+        allowPrivilegeEscalation: false
+        runAsUser: 0
+      serviceAccount: runasanyuid
+      serviceAccountName: runasanyuid
+      restartPolicy: Always
